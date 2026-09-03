@@ -46,6 +46,9 @@ func (r *Repository) Load() (Document, error) {
 	if d.Version != 1 {
 		return Document{}, errors.New("unsupported configuration version")
 	}
+	if len(d.Workspace.Overlays) == 0 {
+		d.Workspace.Overlays = Defaults().Workspace.Overlays
+	}
 	return d, nil
 }
 func (r *Repository) Save(d Document) error {
