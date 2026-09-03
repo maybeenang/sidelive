@@ -18,9 +18,17 @@ func (r *Router) Publish(e core.LiveEvent) {
 	for _, ch := range r.subscribers {
 		select {
 		case ch <- e:
+			continue
 		default:
-			<-ch
-			ch <- e
+		}
+		// Buffer full: drop the oldest item (non-blocking) then retry (non-blocking).
+		select {
+		case <-ch:
+		default:
+		}
+		select {
+		case ch <- e:
+		default:
 		}
 	}
 }
