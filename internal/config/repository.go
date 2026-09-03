@@ -65,5 +65,14 @@ func (r *Repository) Save(d Document) error {
 	if e = os.WriteFile(tmp, b, 0600); e != nil {
 		return e
 	}
-	return os.Rename(tmp, r.path)
+	if e = os.Rename(tmp, r.path); e == nil {
+		return nil
+	}
+	// Windows cannot replace an existing file with Rename.
+	_ = os.Remove(r.path)
+	if e2 := os.Rename(tmp, r.path); e2 != nil {
+		_ = os.Remove(tmp)
+		return e2
+	}
+	return nil
 }
