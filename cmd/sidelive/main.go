@@ -36,8 +36,11 @@ func main() {
 	desktopApp = application.New(application.Options{Name: "SideLive", Description: "Keep your live audience in sight.", LogLevel: slog.LevelInfo, Services: []application.Service{application.NewService(service)}, Assets: application.AssetOptions{Handler: application.BundledAssetFileServer(assets)}})
 	desktopApp.Window.NewWithOptions(application.WebviewWindowOptions{Name: "main", Title: "SideLive", URL: "/", Width: 1080, Height: 760, MinWidth: 760, MinHeight: 620, BackgroundColour: application.NewRGBA(9, 9, 11, 255)})
 	snapshot := service.Snapshot()
-	overlay.Attach(desktopApp, snapshot.Workspace.Overlays[0])
-	defer service.Close()
+	overlayModel := config.Defaults().Workspace.Overlays[0]
+	if len(snapshot.Workspace.Overlays) > 0 {
+		overlayModel = snapshot.Workspace.Overlays[0]
+	}
+	overlay.Attach(desktopApp, overlayModel)
 	if err = desktopApp.Run(); err != nil {
 		log.Fatal(err)
 	}
