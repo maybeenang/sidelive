@@ -1,0 +1,15 @@
+version: '3'
+tasks:
+  install:
+    cmds: [pnpm install]
+  dev:
+    cmds: [pnpm dev]
+  test:
+    cmds: [go test ./..., pnpm test]
+  lint:
+    cmds: [gofmt -w cmd internal providers, go vet ./..., pnpm lint, pnpm typecheck]
+  build:
+    cmds:
+      - pnpm build
+      - rm -rf cmd/sidelive/frontend && mkdir -p cmd/sidelive/frontend && touch cmd/sidelive/frontend/.gitkeep && cp -r frontend/dist/. cmd/sidelive/frontend/
+      - go build -o bin/sidelive ./cmd/sidelive
